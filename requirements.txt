@@ -9,6 +9,7 @@ slowapi==0.1.9
 pydantic==2.8.2
 pydantic-settings==2.3.4
 python-dotenv==1.0.1
+sqlalchemy-cockroachdb==0.4.4
 
 # --- Development / Testing ---
 httpx==0.27.0
