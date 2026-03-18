@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     
     # Cache
     dragonfly_url: str = "redis://localhost:6379/0"
-    cache_ttl_second: int = 3600
+    cache_ttl_seconds: int = 3600
     
     # Rate limiting
     rate_limit_per_minute: int = 60
