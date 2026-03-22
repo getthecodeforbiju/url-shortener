@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime, timezone
 from typing import Optional
 import re
 from pydantic import BaseModel, HttpUrl, field_validator, model_validator
@@ -25,9 +25,11 @@ class ShortenRequest(BaseModel):
     @model_validator(mode="after")
     def validate_expiry(self) -> "ShortenRequest":
         if self.expire_at:
-            now = datetime.utcnow().replace(tzinfo=self.expire_at.tzinfo)
-            if self.expire_at <= now:
-                raise ValueError("expire_at must be a future datetime")
-        return self    
-        
+            now = datetime.now(timezone.utc)   # ✅ timezone-aware
+            exp = self.expire_at
+            if exp.tzinfo is None:
+                exp = exp.replace(tzinfo=timezone.utc)
+            if exp <= now:
+                raise ValueError("expire_at must be a future datetime.")
+        return self
         

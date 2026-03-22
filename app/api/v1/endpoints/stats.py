@@ -8,14 +8,14 @@ from sqlalchemy.orm import Session
 from app.core.rate_limit import limiter
 from app.db.session import get_db
 from app.core.utils.network import get_client_ip
-from app.schemas.url_response import StatusResponse
+from app.schemas.url_response import StatsResponse
 from app.services.redirect_service import get_url_stats, URLNotFoundError
 from app.core.logging import logger
 
 router = APIRouter()
 
 
-@router.get("/stats/{short_code}",response_model=StatusResponse)
+@router.get("/stats/{short_code}",response_model=StatsResponse)
 @limiter.limit("60/minute", key_func=get_client_ip)
 async def url_stats(
     request: Request,
@@ -37,7 +37,7 @@ async def url_stats(
     
     logger.info("GET .stats success short_code=%s click_count=%s",short_code, url_obj.click_count)
     
-    return StatusResponse(
+    return StatsResponse(
         short_code=url_obj.short_code,
         long_url=url_obj.long_url,
         click_count=url_obj.click_count,
