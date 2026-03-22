@@ -31,7 +31,7 @@ def resolve_url(db: Session, short_code: str) -> str:
     # Step 1 - check DragonflyDB cache
     cached = get_cached_url(short_code)
     if cached:
-        _check_expiry(cached.get("expires_at"), now, short_code)
+        _check_expiry(cached.get("expire_at"), now, short_code)
         _increment_click(db, short_code)
         return cached["long_url"]
     
@@ -55,7 +55,7 @@ def resolve_url(db: Session, short_code: str) -> str:
     # Step 5 - increment click counter
     _increment_click(db, short_code)
     
-    logger.info("Resolved short_code=%s -> %.80", short_code, url_obj.long_url)
+    logger.info("Resolved short_code=%s -> %.80s", short_code, url_obj.long_url)
     return url_obj.long_url
 
 def get_url_stats(db: Session, short_code: str) -> URL:

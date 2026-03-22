@@ -55,6 +55,6 @@ async def shorten_url(
         short_url=short_url,
         short_code=url_obj.short_code,
         long_url=url_obj.long_url,
-        expires_at=url_obj.expires_at,
+        expire_at=url_obj.expire_at,
         created_at=url_obj.created_at,
     )
