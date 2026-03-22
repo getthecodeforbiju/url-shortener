@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: url_shortener_api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=cockroachdb+psycopg2://root@cockroachdb:26257/urlshortener?sslmode=disable
+      - DRAGONFLY_URL=redis://dragonfly:6379/0
+      - BASE_URL=http://localhost:8000
+      - RATE_LIMIT_PER_MINUTE=60
+      - LOG_LEVEL=INFO
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+      dragonfly:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./migrations:/app/migrations
+    restart: unless-stopped
+
+  cockroachdb:
+    image: cockroachdb/cockroach:v23.2.0
+    container_name: url_shortener_cockroachdb
+    command: start-single-node --insecure
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    volumes:
+      - cockroach_data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD", "cockroach", "sql", "--insecure", "--execute=SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: url_shortener_dragonfly
+    ports:
+      - "6379:6379"
+    ulimits:
+      memlock: -1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  db-init:
+    image: cockroachdb/cockroach:v23.2.0
+    container_name: url_shortener_db_init
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    command: >
+      sql --insecure --host=cockroachdb:26257
+      --execute="CREATE DATABASE IF NOT EXISTS urlshortener;"
+    restart: "no"
+
+volumes:
+  cockroach_data:
