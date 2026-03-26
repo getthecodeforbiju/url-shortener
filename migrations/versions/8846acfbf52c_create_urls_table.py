@@ -1,16 +1,15 @@
 """create urls table
 
-Revision ID: will be auto-generated
+Revision ID: 8846acfbf52c
 Revises:
-Create Date: auto-generated
+Create Date: 2024-01-01 00:00:00.000000
 
 """
 from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-# These are filled in automatically by Alembic
-revision: str = revision  # leave as-is
+revision: str = "8846acfbf52c"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

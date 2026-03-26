@@ -30,7 +30,7 @@ services:
     command: start-single-node --insecure
     ports:
       - "26257:26257"
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - cockroach_data:/cockroach/cockroach-data
     healthcheck:
@@ -43,10 +43,15 @@ services:
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
     container_name: url_shortener_dragonfly
+    command: --maxmemory=512mb --proactor_threads=2
     ports:
       - "6379:6379"
     ulimits:
       memlock: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
